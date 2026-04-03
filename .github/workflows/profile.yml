@@ -2,7 +2,7 @@ name: Update Profile Card
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,25 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-            - name: Fetch stats and generate card
+      - name: Fetch stats and generate card
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Calculate dynamic dates for the last 7 days
           FROM_DATE=$(date -u -d "7 days ago" +"%Y-%m-%dT%H:%M:%SZ")
           TO_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          # Коммиты за неделю
-          COMMITS=$(gh api graphql -F from="$FROM_DATE" -F to="$TO_DATE" -f query='
-          query($from: DateTime!, $to: DateTime!) {
-            user(login: "harryys-dev") {
-              contributionsCollection(from: $from, to: $to) {
-                contributionCalendar { totalContributions }
+          COMMITS=$(gh api graphql \
+            -F from="$FROM_DATE" \
+            -F to="$TO_DATE" \
+            -f query='
+            query($from: DateTime!, $to: DateTime!) {
+              user(login: "harryys-dev") {
+                contributionsCollection(from: $from, to: $to) {
+                  contributionCalendar { totalContributions }
+                }
               }
-            }
-          }' --jq '.data.user.contributionsCollection.contributionCalendar.totalContributions')
+            }' --jq '.data.user.contributionsCollection.contributionCalendar.totalContributions')
 
-          # Самый активный репо
           REPO=$(gh api graphql -f query='
           {
             user(login: "harryys-dev") {
@@ -42,17 +42,13 @@ jobs:
             }
           }' --jq '.data.user.repositories.nodes[0].nameWithOwner')
 
-          # Публичные репо
           REPOS=$(gh api 'users/harryys-dev' --jq '.public_repos')
 
-          # Подписчики
           FOLLOWERS=$(gh api 'users/harryys-dev' --jq '.followers')
 
-          # Топ языки (filtering out nulls to prevent jq errors if a repo lacks a language)
           LANGS=$(gh api 'users/harryys-dev/repos?sort=stars&per_page=100' \
             --jq '[.[].language | select(. != null)] | group_by(.) | sort_by(-length) | .[0:3] | map(.[0]) | join(", ")')
 
-          # Заменяем плейсхолдеры в шаблоне
           sed -i \
             -e "s/{{COMMITS}}/$COMMITS/" \
             -e "s/{{REPO}}/$REPO/" \
@@ -62,8 +58,8 @@ jobs:
             profile-template.svg
 
           cp profile-template.svg profile.svg
-          
-      - name: Commit & Push
+
+      - name: Commit and Push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
