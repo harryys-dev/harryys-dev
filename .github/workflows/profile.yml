@@ -39,10 +39,10 @@ jobs:
           }' --jq '.data.viewer.repositories.nodes[0].nameWithOwner')
 
           # Публичные репо
-          REPOS=$(gh api 'users/ТВОЙ_НИК' --jq '.public_repos')
+          REPOS=$(gh api 'users/harryys-dev' --jq '.public_repos')
 
           # Подписчики
-          FOLLOWERS=$(gh api 'users/ТВОЙ_НИК' --jq '.followers')
+          FOLLOWERS=$(gh api 'users/harryys-dev' --jq '.followers')
 
           # Топ языки
           LANGS=$(gh api 'users/ТВОЙ_НИК/repos?sort=stars&per_page=100' \
