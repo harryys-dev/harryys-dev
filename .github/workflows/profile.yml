@@ -14,29 +14,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch stats and generate card
+            - name: Fetch stats and generate card
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Calculate dynamic dates for the last 7 days
+          FROM_DATE=$(date -u -d "7 days ago" +"%Y-%m-%dT%H:%M:%SZ")
+          TO_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
           # Коммиты за неделю
-          COMMITS=$(gh api graphql -f query='
-          {
-            viewer {
-              contributionsCollection(from: "2026-03-28T00:00:00Z", to: "2026-04-04T00:00:00Z") {
+          COMMITS=$(gh api graphql -F from="$FROM_DATE" -F to="$TO_DATE" -f query='
+          query($from: DateTime!, $to: DateTime!) {
+            user(login: "harryys-dev") {
+              contributionsCollection(from: $from, to: $to) {
                 contributionCalendar { totalContributions }
               }
             }
-          }' --jq '.data.viewer.contributionsCollection.contributionCalendar.totalContributions')
+          }' --jq '.data.user.contributionsCollection.contributionCalendar.totalContributions')
 
           # Самый активный репо
           REPO=$(gh api graphql -f query='
           {
-            viewer {
+            user(login: "harryys-dev") {
               repositories(first: 1, orderBy: {field: PUSHED_AT, direction: DESC}, ownerAffiliations: OWNER) {
                 nodes { nameWithOwner }
               }
             }
-          }' --jq '.data.viewer.repositories.nodes[0].nameWithOwner')
+          }' --jq '.data.user.repositories.nodes[0].nameWithOwner')
 
           # Публичные репо
           REPOS=$(gh api 'users/harryys-dev' --jq '.public_repos')
@@ -44,9 +48,9 @@ jobs:
           # Подписчики
           FOLLOWERS=$(gh api 'users/harryys-dev' --jq '.followers')
 
-          # Топ языки
+          # Топ языки (filtering out nulls to prevent jq errors if a repo lacks a language)
           LANGS=$(gh api 'users/harryys-dev/repos?sort=stars&per_page=100' \
-            --jq '[.[].language] | group_by(.) | sort_by(-length) | .[0:3] | map(.[0]) | join(", ")')
+            --jq '[.[].language | select(. != null)] | group_by(.) | sort_by(-length) | .[0:3] | map(.[0]) | join(", ")')
 
           # Заменяем плейсхолдеры в шаблоне
           sed -i \
@@ -58,7 +62,7 @@ jobs:
             profile-template.svg
 
           cp profile-template.svg profile.svg
-
+          
       - name: Commit & Push
         run: |
           git config user.name "github-actions"
