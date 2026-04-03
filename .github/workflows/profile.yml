@@ -50,11 +50,11 @@ jobs:
             --jq '[.[].language | select(. != null)] | group_by(.) | sort_by(-length) | .[0:3] | map(.[0]) | join(", ")')
 
           sed -i \
-            -e "s/{{COMMITS}}/$COMMITS/" \
-            -e "s/{{REPO}}/$REPO/" \
-            -e "s/{{REPOS}}/$REPOS/" \
-            -e "s/{{FOLLOWERS}}/$FOLLOWERS/" \
-            -e "s/{{LANGS}}/$LANGS/" \
+            -e "s|{{COMMITS}}|$COMMITS|" \
+            -e "s|{{REPO}}|$REPO|" \
+            -e "s|{{REPOS}}|$REPOS|" \
+            -e "s|{{FOLLOWERS}}|$FOLLOWERS|" \
+            -e "s|{{LANGS}}|$LANGS|" \
             profile-template.svg
 
           cp profile-template.svg profile.svg
