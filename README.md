@@ -14,6 +14,6 @@
 
 <h2 align="center">
 
-![profile](https://raw.githubusercontent.com/harryys-dev/harryys-dev/main/profile.svg)
+![profile](https://raw.githubusercontent.com/harryys-dev/harryys-dev/main/profile.json.svg)
 
 </h2>
