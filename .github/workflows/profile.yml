@@ -45,7 +45,7 @@ jobs:
           FOLLOWERS=$(gh api 'users/harryys-dev' --jq '.followers')
 
           # Топ языки
-          LANGS=$(gh api 'users/ТВОЙ_НИК/repos?sort=stars&per_page=100' \
+          LANGS=$(gh api 'users/harryys-dev/repos?sort=stars&per_page=100' \
             --jq '[.[].language] | group_by(.) | sort_by(-length) | .[0:3] | map(.[0]) | join(", ")')
 
           # Заменяем плейсхолдеры в шаблоне
