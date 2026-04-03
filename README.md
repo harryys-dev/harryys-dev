@@ -1,7 +1,6 @@
-# Hi there, I'm Nikita
-
-Backend developer from Russia. Building things with Go and TypeScript.
-
-## profile
-
+## 
+<h1 align="center">
+  
 ![profile](https://raw.githubusercontent.com/harryys-dev/harryys-dev/main/profile.svg)
+
+</h1>
