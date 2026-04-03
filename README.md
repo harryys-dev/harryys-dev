@@ -14,6 +14,6 @@
 
 <h2 align="center">
 
-![profile](https://raw.githubusercontent.com/harryys-dev/harryys-dev/main/profile.json.svg)
+<img src="pngegg.png" alt="" style="width: 40%">
 
 </h2>
